@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Health Pro 3.0 - Ultimate Financial Health OS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        primaryHover: '#4338ca',
+                        dark: '#0f172a',
+                        panel: '#1e293b',
+                        bglight: '#f8fafc',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #090d16;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .score-circle {
+            background: conic-gradient(var(--tw-gradient-stops));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .score-circle::before {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            background: #0f172a;
+            border-radius: 50%;
+        }
+
+        .breakdown-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .breakdown-item:hover {
+            transform: translateX(4px);
+            background-color: #1e293b;
+        }
+        .breakdown-item.selected {
+            border-left: 4px solid #4f46e5;
+            background-color: #1e293b;
+        }
+
+        #authScreen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #090d16 100%);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease;
+        }
+
+        #toastContainer {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 120;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 selection:bg-indigo-600 selection:text-white">
+
+    <!-- Authentication Screen -->
+    <div id="authScreen">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 mb-4">
+                    <i class="fa-solid fa-shield-halved text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white tracking-tight">Credit Health Pro 3.0</h1>
+                <p class="text-slate-400 mt-2 text-sm">Sign in to access your financial OS dashboard.</p>
+            </div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email / Gmail</label>
+                    <input type="email" id="emailInput" required value="alex.investor@gmail.com" class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Password</label>
+                    <input type="password" id="passInput" required value="password123" class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white font-semibold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                    Secure Login <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+            <div class="mt-6 text-center text-xs text-slate-500">
+                Click login to enter demo mode. All data is locally reactive.
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Shell -->
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col shrink-0">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-600/30">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-base font-extrabold text-white tracking-tight block leading-none" data-i18n="brand">Credit Health</span>
+                        <span class="text-[10px] text-indigo-400 font-bold tracking-wider uppercase">Pro 3.0 OS</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 10-Language Switcher -->
+            <div class="p-4 border-b border-slate-800/80 bg-slate-950/40">
+                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 block flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-indigo-400"></i> <span data-i18n="langLabel">Language</span>
+                </label>
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="w-full bg-slate-800 text-indigo-300 border border-slate-700 rounded-lg py-2 px-3 text-xs font-medium focus:outline-none focus:border-primary cursor-pointer">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+                    <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+                    <option value="te">🇮🇳 తెలుగు (Telugu)</option>
+                    <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml">🇮🇳 മലയാളം (Malayalam)</option>
+                    <option value="mr">🇮🇳 मराठी (Marathi)</option>
+                    <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+                    <option value="bn">🇮🇳 বাংলা (Bengali)</option>
+                    <option value="pa">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+                </select>
+            </div>
+
+            <!-- Scrollable Nav Buttons -->
+            <div class="flex-1 overflow-y-auto py-3 px-3 space-y-1">
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition bg-primary text-white" data-target="dashboard">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-chart-pie w-4 text-center"></i> <span data-i18n="navDash">Dashboard</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="score">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-gauge-high w-4 text-center"></i> <span data-i18n="navScore">Score Breakdown</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="cards">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-credit-card w-4 text-center"></i> <span data-i18n="navCards">Credit Cards</span></div>
+                    <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full text-[10px]" id="cardsCountBadge">4</span>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="loans">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-landmark w-4 text-center"></i> <span data-i18n="navLoans">Loans & EMIs</span></div>
+                    <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full text-[10px]" id="loansCountBadge">2</span>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="strategy">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-bullseye w-4 text-center"></i> <span data-i18n="navStrategy">Debt Strategy</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="wallet">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-wallet w-4 text-center"></i> <span data-i18n="navWallet">Personal Wallet</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="spending">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-receipt w-4 text-center"></i> <span data-i18n="navSpending">Spending</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="simulator">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-sliders w-4 text-center"></i> <span data-i18n="navSim">Simulator</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="calendar">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-calendar-days w-4 text-center"></i> <span data-i18n="navCalendar">Calendar</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="copilot">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-robot w-4 text-center text-indigo-400"></i> <span data-i18n="navAI">AI Copilot</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="actions">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-list-check w-4 text-center"></i> <span data-i18n="navActions">Action Plan</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="safety">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-user-shield w-4 text-center text-emerald-400"></i> <span data-i18n="navSafety">RBI Safety</span></div>
+                </button>
+                <button class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800 hover:text-white transition" data-target="profile">
+                    <div class="flex items-center gap-3"><i class="fa-solid fa-id-card w-4 text-center"></i> <span data-i18n="navProfile">Profile & Credentials</span></div>
+                </button>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 flex items-center justify-between">
+                <button onclick="openQuizModal()" class="w-full bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-2 mb-2">
+                    <i class="fa-solid fa-award"></i> <span data-i18n="btnQuiz">Take Health Quiz</span>
+                </button>
+            </div>
+
+            <div class="p-3 border-t border-slate-800">
+                <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content View Area -->
+        <main class="flex-1 flex flex-col h-full relative bg-slate-950 overflow-hidden">
+            
+            <!-- Header Bar -->
+            <header class="h-16 glass-panel border-b border-slate-800 flex items-center justify-between px-8 z-10 shrink-0">
+                <div class="flex items-center gap-4">
+                    <h2 id="pageTitle" class="text-lg font-bold text-white tracking-tight" data-i18n="navDash">Dashboard</h2>
+                    <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-semibold">Live System</span>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <!-- Income Display & Quick Edit -->
+                    <div class="hidden md:flex items-center gap-2 bg-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400" data-i18n="lblIncome">Monthly Income:</span>
+                        <span class="text-xs font-bold text-emerald-400" id="headerIncomeDisplay">₹ 1,35,000</span>
+                        <button onclick="promptEditIncome()" class="text-slate-400 hover:text-white ml-1 text-xs"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p class="font-bold text-xs text-white" id="topUserName">Alex Investor</p>
+                            <p class="text-slate-400 text-[10px]" id="topUserEmail">alex.investor@gmail.com</p>
+                        </div>
+                        <div onclick="switchTab('profile')" class="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold shadow-md cursor-pointer hover:opacity-90 transition">
+                            <i class="fa-solid fa-user text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable View Container -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+
+                <!-- 1. DASHBOARD TAB -->
+                <div id="dashboard" class="tab-content active space-y-6">
+                    
+                    <!-- Core Features Bar -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3" data-i18n="dashCoreFeatures">🌟 Core Features Overview</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="glass-card p-4 rounded-xl border-t-4 border-t-indigo-500">
+                                <div class="text-2xl mb-1 text-indigo-400"><i class="fa-solid fa-chart-line"></i></div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feat1Title">Credit Analysis</h4>
+                                <p class="text-xs text-slate-400 mt-1" data-i18n="feat1Desc">Analyse credit utilisation, balance & payment behavior.</p>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl border-t-4 border-t-emerald-500">
+                                <div class="text-2xl mb-1 text-emerald-400"><i class="fa-solid fa-lightbulb"></i></div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feat2Title">Smart Advice</h4>
+                                <p class="text-xs text-slate-400 mt-1" data-i18n="feat2Desc">Get actionable recommendations to boost your score.</p>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl border-t-4 border-t-amber-500">
+                                <div class="text-2xl mb-1 text-amber-400"><i class="fa-solid fa-sliders"></i></div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feat3Title">Credit Simulator</h4>
+                                <p class="text-xs text-slate-400 mt-1" data-i18n="feat3Desc">Test 'what if' scenarios for spending & new loans.</p>
+                            </div>
+                            <div class="glass-card p-4 rounded-xl border-t-4 border-t-rose-500">
+                                <div class="text-2xl mb-1 text-rose-400"><i class="fa-solid fa-bell"></i></div>
+                                <h4 class="font-bold text-sm text-white" data-i18n="feat4Title">Payment Awareness</h4>
+                                <p class="text-xs text-slate-400 mt-1" data-i18n="feat4Desc">Stay ahead of upcoming credit card & EMI deadlines.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Health Score Summary Card -->
+                    <div class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                            
+                            <div class="lg:col-span-5 flex flex-col sm:flex-row items-center gap-6">
+                                <!-- Score Donut -->
+                                <div class="w-36 h-36 score-circle from-emerald-400 via-emerald-500 to-emerald-600 shadow-xl" style="--tw-gradient-stops: var(--tw-gradient-from) 78%, #1e293b 78%;">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+                                        <span class="text-3xl font-black text-white" id="dashScoreVal">780</span>
+                                        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">out of 900</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 text-center sm:text-left">
+                                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold uppercase tracking-wider" data-i18n="healthy">EXCELLENT</span>
+                                    <h3 class="text-xl font-extrabold text-white" data-i18n="dashSummary">Credit Health Summary</h3>
+                                    <p class="text-xs text-indigo-300 font-semibold">Est. CIBIL Range: <span class="text-white bg-indigo-600/30 px-2 py-0.5 rounded" id="dashCibilVal">768 - 785</span></p>
+                                    <button onclick="switchTab('score')" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold inline-flex items-center gap-1">
+                                        View Complete Breakdown <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t lg:border-t-0 lg:border-l border-slate-800 pt-4 lg:pt-0 lg:pl-6">
+                                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase" data-i18n="lblUtil">Total Utilisation</p>
+                                    <p class="text-lg font-black text-emerald-400 mt-1" id="dashUtilVal">24.7%</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">Optimal (&lt;30%)</p>
+                                </div>
+                                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase" data-i18n="lblEmiBurden">Monthly EMI</p>
+                                    <p class="text-lg font-black text-amber-400 mt-1" id="dashEmiVal">₹ 30,300</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">22.4% DTI ratio</p>
+                                </div>
+                                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase" data-i18n="lblCards">Active Cards</p>
+                                    <p class="text-lg font-black text-white mt-1" id="dashCardsVal">4 Cards</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">Limit ₹8.70 Lakh</p>
+                                </div>
+                                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase" data-i18n="lblSurplus">Net Surplus</p>
+                                    <p class="text-lg font-black text-emerald-400 mt-1" id="dashSurplusVal">₹ 67,700</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">Savings capacity</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Quick Wallet & Action Center Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Action Center & Alerts -->
+                        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> <span data-i18n="dashAlerts">Action Center & Upcoming Alerts</span>
+                                </h3>
+                                <button onclick="switchTab('actions')" class="text-xs text-indigo-400 font-semibold hover:underline">View All Actions</button>
+                            </div>
+                            <div class="space-y-3" id="dashAlertsContainer">
+                                <!-- Dynamic alerts injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Mini Wallet Overview -->
+                        <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <p class="text-xs font-bold uppercase text-slate-400">Personal Wallet Balance</p>
+                                    <button onclick="switchTab('wallet')" class="text-xs text-indigo-400 font-semibold hover:underline">Manage Wallet</button>
+                                </div>
+                                <h4 class="text-3xl font-black text-white" id="dashWalletBalDisplay">₹ 14,500.00</h4>
+                                <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> +₹2,500 added this month
+                                </p>
+                            </div>
+                            
+                            <div class="mt-6 flex gap-3">
+                                <button onclick="addFundsPrompt()" class="flex-1 bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/30">
+                                    <i class="fa-solid fa-plus"></i> Add Funds
+                                </button>
+                                <button onclick="openSendMoneyModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-paper-plane"></i> Send
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- 2. SCORE BREAKDOWN TAB -->
+                <div id="score" class="tab-content">
+                    <div class="max-w-5xl mx-auto space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">How Your Credit Health Score is Calculated</h2>
+                            <p class="text-xs text-slate-400">Based on standard credit bureau weighting factors (Payment history 35%, Utilisation 30%, History 15%, Mix 10%, Inquiries 10%).</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Factors Selector -->
+                            <div class="space-y-2">
+                                <div class="breakdown-item selected p-4 rounded-xl border border-slate-800" onclick="showScoreDetail('payment', this)">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-bold text-sm text-white">Payment History</span>
+                                        <span class="text-xs font-bold bg-indigo-600 text-white px-2 py-0.5 rounded">35%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: 98%"></div></div>
+                                </div>
+                                <div class="breakdown-item p-4 rounded-xl border border-slate-800" onclick="showScoreDetail('utilization', this)">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-bold text-sm text-white">Credit Utilisation</span>
+                                        <span class="text-xs font-bold bg-indigo-600 text-white px-2 py-0.5 rounded">30%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: 82%"></div></div>
+                                </div>
+                                <div class="breakdown-item p-4 rounded-xl border border-slate-800" onclick="showScoreDetail('history', this)">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-bold text-sm text-white">Length of History</span>
+                                        <span class="text-xs font-bold bg-indigo-600 text-white px-2 py-0.5 rounded">15%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-amber-500 h-1.5 rounded-full" style="width: 65%"></div></div>
+                                </div>
+                                <div class="breakdown-item p-4 rounded-xl border border-slate-800" onclick="showScoreDetail('new', this)">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-bold text-sm text-white">New Credit & Inquiries</span>
+                                        <span class="text-xs font-bold bg-indigo-600 text-white px-2 py-0.5 rounded">10%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: 90%"></div></div>
+                                </div>
+                                <div class="breakdown-item p-4 rounded-xl border border-slate-800" onclick="showScoreDetail('mix', this)">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-bold text-sm text-white">Credit Mix</span>
+                                        <span class="text-xs font-bold bg-indigo-600 text-white px-2 py-0.5 rounded">10%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: 88%"></div></div>
+                                </div>
+                            </div>
+
+                            <!-- Factor Detail Display -->
+                            <div class="lg:col-span-2 glass-panel p-6 rounded-2xl flex flex-col justify-between" id="scoreFactorPanel">
+                                <div>
+                                    <div id="detailIcon" class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xl mb-4">
+                                        <i class="fa-solid fa-calendar-check"></i>
+                                    </div>
+                                    <h3 id="detailTitle" class="text-xl font-extrabold text-white mb-2">Payment History (35%)</h3>
+                                    <p id="detailDesc" class="text-xs text-slate-300 leading-relaxed mb-6 border-b border-slate-800 pb-4">
+                                        This is the most critical component. It reflects your track record of paying credit card statements and loan EMIs on or before due dates.
+                                    </p>
+                                    <h4 class="font-bold text-sm text-white mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-lightbulb text-amber-400"></i> Smart Decisions to Improve:
+                                    </h4>
+                                    <ul id="detailTips" class="space-y-3">
+                                        <!-- Dynamic tips JS -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CREDIT CARDS TAB -->
+                <div id="cards" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Credit Cards Management</h2>
+                            <p class="text-xs text-slate-400">Track limits, balances, billing cycles, and utilization across cards.</p>
+                        </div>
+                        <button onclick="openAddCardModal()" class="bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md shadow-indigo-600/30">
+                            <i class="fa-solid fa-plus"></i> Add Credit Card
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="cardsGridContainer">
+                        <!-- Dynamic Credit Cards rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- 4. LOANS & EMIS TAB -->
+                <div id="loans" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Active Loans & EMIs</h2>
+                            <p class="text-xs text-slate-400">Manage personal loans, car loans, home loans, and monthly obligations.</p>
+                        </div>
+                        <button onclick="openAddLoanModal()" class="bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md shadow-indigo-600/30">
+                            <i class="fa-solid fa-plus"></i> Add Active Loan
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="loansGridContainer">
+                        <!-- Dynamic Loans rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- 5. DEBT STRATEGY TAB -->
+                <div id="strategy" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Debt Payoff Optimization Strategy</h2>
+                        <p class="text-xs text-slate-400">Compare Debt Avalanche vs Debt Snowball to eliminate debt faster and save interest.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-indigo-500">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="px-2.5 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-full uppercase">Recommended</span>
+                                    <h3 class="text-lg font-bold text-white mt-1">Debt Avalanche Method</h3>
+                                </div>
+                                <i class="fa-solid fa-bolt text-2xl text-indigo-400"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                                Target the loan with the **highest interest rate** first while paying minimums on others. Saves maximum interest money over time.
+                            </p>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2 mb-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">First Target:</span>
+                                    <span class="font-bold text-white" id="avalancheTarget">HDFC Personal Loan (11.5%)</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Estimated Total Interest:</span>
+                                    <span class="font-bold text-emerald-400" id="avalancheInterest">₹ 79,733</span>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Avalanche Plan active! Extra payments routed to Personal Loan.')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold transition">
+                                Apply Avalanche Strategy
+                            </button>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-emerald-500">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-full uppercase">Psychological Wins</span>
+                                    <h3 class="text-lg font-bold text-white mt-1">Debt Snowball Method</h3>
+                                </div>
+                                <i class="fa-solid fa-snowflake text-2xl text-emerald-400"></i>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                                Target the loan with the **smallest outstanding balance** first to close accounts rapidly and gain momentum.
+                            </p>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2 mb-4">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">First Target:</span>
+                                    <span class="font-bold text-white" id="snowballTarget">HDFC Personal Loan</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Estimated Total Interest:</span>
+                                    <span class="font-bold text-amber-400" id="snowballInterest">₹ 82,922</span>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Snowball Plan active! Routing extra funds to smallest loan.')" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs font-bold transition">
+                                Apply Snowball Strategy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. PERSONAL WALLET TAB -->
+                <div id="wallet" class="tab-content space-y-6">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 rounded-3xl p-8 text-white shadow-2xl border border-indigo-500/30 relative overflow-hidden mb-6">
+                            <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                                <div>
+                                    <p class="text-indigo-300 font-bold tracking-wider mb-1 uppercase text-xs">Total Personal Wallet Balance</p>
+                                    <h2 class="text-4xl font-black tracking-tight mb-2" id="mainWalletBal">₹ 14,500.00</h2>
+                                    <p class="text-xs text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +₹2,500 this month</p>
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button onclick="addFundsPrompt()" class="flex-1 md:flex-none bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primaryHover transition shadow-lg flex items-center justify-center gap-2 text-xs">
+                                        <i class="fa-solid fa-plus"></i> Add Funds
+                                    </button>
+                                    <button onclick="openSendMoneyModal()" class="flex-1 md:flex-none bg-slate-800 text-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg flex items-center justify-center gap-2 text-xs">
+                                        <i class="fa-solid fa-paper-plane"></i> Send Money
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-white">Recent Transactions</h3>
+                            <button onclick="addFundsPrompt()" class="text-xs text-indigo-400 hover:underline">Refresh Transactions</button>
+                        </div>
+
+                        <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden divide-y divide-slate-800" id="txList">
+                            <!-- Dynamic Transactions by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. SPENDING & EXPENSES TAB -->
+                <div id="spending" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Monthly Expense Tracking</h2>
+                            <p class="text-xs text-slate-400">Record and categorise card and bank transactions.</p>
+                        </div>
+                        <button onclick="openAddExpenseModal()" class="bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md shadow-indigo-600/30">
+                            <i class="fa-solid fa-plus"></i> Record Expense
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
+                            <h3 class="text-base font-bold text-white mb-4">Expense Log</h3>
+                            <div class="space-y-3" id="expensesListContainer">
+                                <!-- Dynamic Expense items JS -->
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="text-base font-bold text-white">Category Summary</h3>
+                            <div class="space-y-3" id="expenseCategoriesSummary">
+                                <!-- Categories JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. WHAT-IF SIMULATOR TAB -->
+                <div id="simulator" class="tab-content space-y-6">
+                    <div class="max-w-4xl mx-auto space-y-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">What-If Credit Score Simulator</h2>
+                            <p class="text-xs text-slate-400">Test how new spending, debt payoff, or missed EMIs will impact your credit score instantly.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 rounded-2xl space-y-6">
+                                <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-3">Adjust Financial Parameters</h3>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2 text-xs">
+                                        <label class="font-semibold text-slate-300">Add New Card Spending (₹)</label>
+                                        <span id="spendValDisplay" class="font-bold text-indigo-400">₹ 0</span>
+                                    </div>
+                                    <input type="range" id="simSpend" min="0" max="100000" step="2000" value="0" oninput="updateSimulator()" class="w-full accent-primary bg-slate-800 h-2 rounded-lg cursor-pointer">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-2 text-xs">
+                                        <label class="font-semibold text-slate-300">Pay Down Existing Debt (₹)</label>
+                                        <span id="payValDisplay" class="font-bold text-emerald-400">₹ 0</span>
+                                    </div>
+                                    <input type="range" id="simPay" min="0" max="60000" step="2000" value="0" oninput="updateSimulator()" class="w-full accent-emerald-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-2 text-xs">
+                                        <label class="font-semibold text-slate-300">Apply New Personal Loan (₹)</label>
+                                        <span id="loanValDisplay" class="font-bold text-amber-400">₹ 0</span>
+                                    </div>
+                                    <input type="range" id="simLoan" min="0" max="500000" step="25000" value="0" oninput="updateSimulator()" class="w-full accent-amber-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                                </div>
+
+                                <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                                    <div>
+                                        <p class="font-bold text-xs text-white">Simulate Missed EMI Payment</p>
+                                        <p class="text-[10px] text-slate-400">Tests severe late payment impact</p>
+                                    </div>
+                                    <input type="checkbox" id="simMissed" onchange="updateSimulator()" class="w-5 h-5 accent-rose-500 rounded cursor-pointer">
+                                </div>
+                            </div>
+
+                            <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+                                <h3 class="font-bold text-sm text-slate-300 mb-2">Projected Credit Health Score</h3>
+                                
+                                <div class="w-36 h-36 score-circle from-primary via-indigo-600 to-indigo-800 shadow-xl my-4" style="--tw-gradient-stops: var(--tw-gradient-from) 100%, #1e293b 100%;">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-slate-900 m-2 rounded-full">
+                                        <span id="simScoreDisplay" class="text-3xl font-black text-white">780</span>
+                                        <span id="simCibilDisplay" class="text-[10px] text-indigo-400 font-bold">Est CIBIL: 780</span>
+                                    </div>
+                                </div>
+
+                                <p id="simFeedback" class="text-xs text-slate-300 font-medium px-4 leading-relaxed">
+                                    Adjust parameters to observe instant score fluctuations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. FINANCIAL CALENDAR TAB -->
+                <div id="calendar" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Financial Calendar & Due Dates</h2>
+                        <p class="text-xs text-slate-400">Never miss a payment with statement and EMI schedules.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl">
+                            <h3 class="text-base font-bold text-white mb-4">Upcoming Due Dates (August / September)</h3>
+                            <div class="space-y-3" id="calendarEventsContainer">
+                                <!-- Calendar items by JS -->
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="text-base font-bold text-white">Calendar Summary</h3>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Total Cards Due This Month:</span>
+                                    <span class="font-bold text-white">₹ 1,12,000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Total Loans EMI Due:</span>
+                                    <span class="font-bold text-white">₹ 30,300</span>
+                                </div>
+                                <div class="flex justify-between border-t border-slate-800 pt-2">
+                                    <span class="text-slate-400">Auto-Pay Mandates Active:</span>
+                                    <span class="font-bold text-emerald-400">3 Mandates</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. AI COPILOT TAB -->
+                <div id="copilot" class="tab-content">
+                    <div class="max-w-3xl mx-auto h-[calc(100vh-140px)] flex flex-col">
+                        <div class="mb-4 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-white">AI Credit & Financial Copilot</h2>
+                                <p class="text-xs text-slate-400">Ask advice on CIBIL improvement, DTI ratios, or credit strategies.</p>
+                            </div>
+                            <button onclick="quickExplain30()" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                <i class="fa-solid fa-bolt text-amber-400"></i> Explain My Money in 30s
+                            </button>
+                        </div>
+                        
+                        <div class="flex-1 glass-panel border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
+                            <div id="chatWindow" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-950/60">
+                                <div class="flex gap-3 max-w-[85%]">
+                                    <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs font-bold">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl rounded-tl-none text-xs text-slate-200 leading-relaxed shadow-sm">
+                                        Namaste! I am your Smart AI Credit Copilot. Based on your 780 score and 4 active credit cards, how can I assist your financial strategy today?
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 bg-slate-900 border-t border-slate-800 flex gap-2">
+                                <input type="text" id="aiInput" placeholder="Ask 'How do I reach an 800 CIBIL score?'..." class="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 text-white rounded-xl text-xs focus:outline-none focus:border-primary">
+                                <button onclick="sendAI()" class="bg-primary hover:bg-primaryHover text-white px-5 py-2.5 rounded-xl transition text-xs font-bold flex items-center gap-2">
+                                    Send <i class="fa-solid fa-paper-plane text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. ACTION PLAN TAB -->
+                <div id="actions" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Personalised Action Plan</h2>
+                            <p class="text-xs text-slate-400">Complete these recommendations to optimize your CIBIL profile.</p>
+                        </div>
+                        <span class="text-xs font-bold bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg" id="actionsCompletedCount">1 / 4 Completed</span>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl space-y-3" id="actionsListContainer">
+                        <!-- Actions JS -->
+                    </div>
+                </div>
+
+                <!-- 12. RBI SAFETY TAB -->
+                <div id="safety" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">RBI Guidelines & Security Protection</h2>
+                        <p class="text-xs text-slate-400">Official Banking Rights, Ombudsman details, and digital safety rules in India.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-white">RBI Integrated Ombudsman Scheme</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                If a bank or NBFC fails to resolve your loan or credit card dispute within 30 days, file a complaint at **cms.rbi.org.in** or call toll-free **14448**.
+                            </p>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-white">Card Control & Security Mandate</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Always disable international transactions and ATM cash withdrawals on credit cards when not in use via your bank app to prevent unauthorized charges.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 13. USER PROFILE & CREDENTIALS TAB -->
+                <div id="profile" class="tab-content">
+                    <div class="max-w-4xl mx-auto glass-panel rounded-2xl overflow-hidden">
+                        <div class="h-32 bg-gradient-to-r from-indigo-600 to-purple-700 p-6 flex items-end justify-between">
+                            <span class="px-3 py-1 bg-black/40 backdrop-blur text-white text-xs font-bold rounded-full border border-white/20">Verified Financial Profile</span>
+                        </div>
+                        
+                        <div class="px-8 pb-8 space-y-8">
+                            <!-- Avatar & Core Info -->
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end -mt-12 mb-4 gap-4">
+                                <div class="flex items-end gap-4">
+                                    <div class="w-24 h-24 rounded-2xl border-4 border-slate-900 bg-slate-800 text-slate-300 flex items-center justify-center text-3xl font-black shadow-xl">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-2xl font-extrabold text-white" id="profileName">Alex Investor</h2>
+                                        <p class="text-xs text-slate-400" id="profileEmail">alex.investor@gmail.com</p>
+                                    </div>
+                                </div>
+                                <button onclick="openEditProfileModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-pen"></i> Edit Personal Details
+                                </button>
+                            </div>
+
+                            <!-- Credentials & Personal Info Grid -->
+                            <div class="space-y-4">
+                                <h3 class="text-sm font-bold text-white border-b border-slate-800 pb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-id-card text-indigo-400"></i> Personal Credentials & Identification
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Gmail Address</span>
+                                        <p class="text-xs font-semibold text-white mt-1" id="credGmail">alex.investor@gmail.com</p>
+                                    </div>
+                                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Mobile Phone</span>
+                                        <p class="text-xs font-semibold text-white mt-1" id="credPhone">+91 98765 43210</p>
+                                    </div>
+                                    <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">PAN Card Number</span>
+                                        <p class="text-xs font-mono font-semibold text-indigo-300 mt-1" id="credPan">ABCDE1234F</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connected Bank Accounts Credentials Section -->
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-building-columns text-emerald-400"></i> Connected Bank Accounts & Credentials
+                                    </h3>
+                                    <button onclick="openAddBankModal()" class="text-xs text-indigo-400 font-bold hover:underline flex items-center gap-1">
+                                        <i class="fa-solid fa-plus"></i> Add Bank Details
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="profileBankList">
+                                    <!-- Bank Details JS -->
+                                </div>
+                            </div>
+
+                            <!-- Credit Card Details Credentials Section -->
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-credit-card text-indigo-400"></i> Saved Credit Cards & Banking Credentials
+                                    </h3>
+                                    <button onclick="openAddCardModal()" class="text-xs text-indigo-400 font-bold hover:underline flex items-center gap-1">
+                                        <i class="fa-solid fa-plus"></i> Add Credit Card
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="profileCardList">
+                                    <!-- Card Details JS -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- MODALS SECTION -->
+    
+    <!-- 1. Add Credit Card Modal -->
+    <div id="addCardModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Add New Credit Card</h3>
+                <button onclick="closeModal('addCardModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddCardSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Issuing Bank</label>
+                    <input type="text" name="bank" required placeholder="e.g. HDFC Bank" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Card Name / Variant</label>
+                    <input type="text" name="name" required placeholder="e.g. Regalia Gold" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Credit Limit (₹)</label>
+                        <input type="number" name="limit" required placeholder="200000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Outstanding Balance (₹)</label>
+                        <input type="number" name="outstanding" required placeholder="15000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Statement Date (Day)</label>
+                        <input type="number" name="statementDate" min="1" max="31" required placeholder="15" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Due Date (Day)</label>
+                        <input type="number" name="dueDate" min="1" max="31" required placeholder="5" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold text-xs transition mt-2">Save Credit Card</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Add Active Loan Modal -->
+    <div id="addLoanModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Add Active Loan</h3>
+                <button onclick="closeModal('addLoanModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddLoanSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Lender / Institution</label>
+                    <input type="text" name="lender" required placeholder="e.g. ICICI Bank" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Loan Type</label>
+                    <input type="text" name="type" required placeholder="e.g. Personal Loan / Car Loan" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Outstanding Amount (₹)</label>
+                        <input type="number" name="outstanding" required placeholder="250000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Monthly EMI (₹)</label>
+                        <input type="number" name="emi" required placeholder="12500" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Interest Rate (%)</label>
+                        <input type="number" step="0.1" name="interestRate" required placeholder="10.5" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">EMI Due Date (Day)</label>
+                        <input type="number" name="emiDueDate" min="1" max="31" required placeholder="10" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold text-xs transition mt-2">Save Active Loan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Add Bank Details Credentials Modal -->
+    <div id="addBankModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Add Bank Account Credentials</h3>
+                <button onclick="closeModal('addBankModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddBankSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Bank Name</label>
+                    <input type="text" name="bankName" required placeholder="e.g. State Bank of India" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Account Number</label>
+                    <input type="text" name="accountNo" required placeholder="XXXX XXXX 9821" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">IFSC Code</label>
+                        <input type="text" name="ifsc" required placeholder="SBIN0001234" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Account Type</label>
+                        <select name="type" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                            <option value="Savings">Savings Account</option>
+                            <option value="Current">Current Account</option>
+                            <option value="Salary">Salary Account</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold text-xs transition mt-2">Save Bank Credentials</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Add Expense Modal -->
+    <div id="addExpenseModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Record New Expense</h3>
+                <button onclick="closeModal('addExpenseModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddExpenseSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Merchant / Description</label>
+                    <input type="text" name="merchant" required placeholder="e.g. Swiggy / Amazon" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Amount (₹)</label>
+                        <input type="number" name="amount" required placeholder="1250" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Category</label>
+                        <select name="category" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                            <option value="Food & Dining">Food & Dining</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Bills & Utilities">Bills & Utilities</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Travel">Travel</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold text-xs transition mt-2">Record Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. Interactive Branching Detail Modal -->
+    <div id="branchDetailModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-lg mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white" id="branchModalTitle">Entity Details</h3>
+                <button onclick="closeModal('branchDetailModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="branchModalBody" class="space-y-3 text-xs text-slate-300">
+                <!-- Dynamic branch content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Health Quiz Modal -->
+    <div id="quizModal" class="modal-overlay">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-award text-indigo-400"></i> Financial Literacy & Health Quiz
+                </h3>
+                <button onclick="closeModal('quizModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-4 text-xs text-slate-300" id="quizBody">
+                <div>
+                    <p class="font-bold text-white mb-2">1. What is the ideal credit utilization ratio?</p>
+                    <label class="block bg-slate-800 p-2 rounded border border-slate-700 cursor-pointer mb-1">
+                        <input type="radio" name="q1" value="below30" class="mr-2 accent-primary"> Under 30%
+                    </label>
+                    <label class="block bg-slate-800 p-2 rounded border border-slate-700 cursor-pointer">
+                        <input type="radio" name="q1" value="above50" class="mr-2 accent-primary"> Above 50%
+                    </label>
+                </div>
+                <div>
+                    <p class="font-bold text-white mb-2">2. What factor holds the highest weight in CIBIL calculation?</p>
+                    <label class="block bg-slate-800 p-2 rounded border border-slate-700 cursor-pointer mb-1">
+                        <input type="radio" name="q2" value="payment" class="mr-2 accent-primary"> Payment History (35%)
+                    </label>
+                    <label class="block bg-slate-800 p-2 rounded border border-slate-700 cursor-pointer">
+                        <input type="radio" name="q2" value="inquiries" class="mr-2 accent-primary"> Hard Inquiries (10%)
+                    </label>
+                </div>
+                <button onclick="submitQuiz()" class="w-full bg-primary hover:bg-primaryHover text-white py-2.5 rounded-xl font-bold transition">Submit Quiz Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // -------------------------------------------------------------
+        // APPLICATION STATE & DATA
+        // -------------------------------------------------------------
+        let walletBalance = 14500;
+        let baseScore = 780;
+        let monthlyIncome = 135000;
+        let currentUser = { email: "alex.investor@gmail.com", name: "Alex Investor", phone: "+91 98765 43210", pan: "ABCDE1234F" };
+
+        let cards = [
+            { id: 'card-1', bank: 'HDFC Bank', name: 'Regalia Gold', limit: 350000, outstanding: 68000, statementDate: 15, dueDate: 5, cardType: 'Visa Signature', cardNo: '•••• 4821', expiry: '08/28', cvv: '***' },
+            { id: 'card-2', bank: 'ICICI Bank', name: 'Amazon Pay', limit: 180000, outstanding: 45000, statementDate: 20, dueDate: 10, cardType: 'Mastercard Platinum', cardNo: '•••• 1109', expiry: '11/27', cvv: '***' },
+            { id: 'card-3', bank: 'SBI Card', name: 'SimplyCLICK', limit: 120000, outstanding: 14000, statementDate: 1, dueDate: 21, cardType: 'Visa Select', cardNo: '•••• 9932', expiry: '03/29', cvv: '***' },
+            { id: 'card-4', bank: 'Axis Bank', name: 'Flipkart Credit Card', limit: 220000, outstanding: 92000, statementDate: 12, dueDate: 2, cardType: 'Visa Signature', cardNo: '•••• 7741', expiry: '05/26', cvv: '***' }
+        ];
+
+        let loans = [
+            { id: 'loan-1', lender: 'HDFC Bank', type: 'Personal Loan', originalAmount: 500000, outstanding: 320000, interestRate: 11.5, emi: 13800, emiDueDate: 5, tenureMonths: 48, remainingMonths: 26 },
+            { id: 'loan-2', lender: 'SBI', type: 'Car Loan', originalAmount: 800000, outstanding: 420000, interestRate: 8.85, emi: 16500, emiDueDate: 10, tenureMonths: 60, remainingMonths: 30 }
+        ];
+
+        let bankAccounts = [
+            { id: 'bank-1', bankName: 'HDFC Bank', accountNo: '•••• 9821', ifsc: 'HDFC0000128', type: 'Salary Account', balance: '₹ 84,200.00' },
+            { id: 'bank-2', bankName: 'ICICI Bank', accountNo: '•••• 4410', ifsc: 'ICIC0000521', type: 'Savings Account', balance: '₹ 22,150.00' }
+        ];
+
+        let expenses = [
+            { id: 'exp-1', category: 'Shopping', amount: 14500, date: '2026-08-22', merchant: 'Amazon India', paymentMethod: 'HDFC Regalia' },
+            { id: 'exp-2', category: 'Food & Dining', amount: 3800, date: '2026-08-24', merchant: 'Swiggy / Zomato', paymentMethod: 'ICICI Amazon Pay' },
+            { id: 'exp-3', category: 'Bills & Utilities', amount: 5200, date: '2026-08-18', merchant: 'Electricity & Wi-Fi', paymentMethod: 'SBI SimplyCLICK' }
+        ];
+
+        let actions = [
+            { id: 'act-1', text: 'Prepay ₹15,000 on Axis Flipkart card to pull utilization below 35%', impact: '+12 Pts', priority: 'High', completed: false },
+            { id: 'act-2', text: 'Set auto-pay mandate for ICICI Amazon Pay due on 10th', impact: '+4 Pts', priority: 'Medium', completed: true },
+            { id: 'act-3', text: 'Pay extra ₹2,500 EMI towards HDFC Personal Loan to shorten tenure', impact: '+8 Pts', priority: 'High', completed: false }
+        ];
+
+        let transactions = [
+            { id: 'tx-1', title: 'Deposit from Bank', date: 'Today, 10:30 AM', amount: 5000, type: 'credit' },
+            { id: 'tx-2', title: 'HDFC Credit Card Bill', date: 'Aug 15, 2026', amount: 2500, type: 'debit' },
+            { id: 'tx-3', title: 'Electricity Bill', date: 'Aug 12, 2026', amount: 1200, type: 'debit' }
+        ];
+
+        // -------------------------------------------------------------
+        // MULTI-LANGUAGE TRANSLATION DICTIONARY (10 INDIAN LANGUAGES)
+        // -------------------------------------------------------------
+        const i18n = {
+            en: {
+                brand: "Credit Health", langLabel: "Language",
+                navDash: "Dashboard", navScore: "Score Breakdown", navCards: "Credit Cards", navLoans: "Loans & EMIs", navStrategy: "Debt Strategy", navWallet: "Personal Wallet", navSpending: "Spending", navSim: "Simulator", navCalendar: "Calendar", navAI: "AI Copilot", navActions: "Action Plan", navSafety: "RBI Safety", navProfile: "Profile & Credentials", logout: "Logout", btnQuiz: "Take Health Quiz",
+                dashCoreFeatures: "🌟 Core Features Overview",
+                feat1Title: "Credit Analysis", feat1Desc: "Analyse credit utilisation, balance & payment behavior.",
+                feat2Title: "Smart Advice", feat2Desc: "Get actionable recommendations to boost your score.",
+                feat3Title: "Credit Simulator", feat3Desc: "Test 'what if' scenarios for spending & new loans.",
+                feat4Title: "Payment Awareness", feat4Desc: "Stay ahead of upcoming credit card & EMI deadlines.",
+                dashSummary: "Credit Health Summary", dashAlerts: "Action Center & Alerts", healthy: "EXCELLENT"
+            },
+            hi: {
+                brand: "क्रेडिट स्वास्थ्य", langLabel: "भाषा",
+                navDash: "डैशबोर्ड", navScore: "स्कोर विवरण", navCards: "क्रेडिट कार्ड", navLoans: "ऋण एवं ईएमआई", navStrategy: "ऋण रणनीति", navWallet: "निजी वॉलेट", navSpending: "खर्च", navSim: "सिम्युलेटर", navCalendar: "कैलेंडर", navAI: "एआई कोपायलट", navActions: "कार्य योजना", navSafety: "आरबीआई सुरक्षा", navProfile: "प्रोफ़ाइल एवं क्रेडेंशियल", logout: "लॉग आउट", btnQuiz: "स्वास्थ्य परीक्षा लें",
+                dashCoreFeatures: "🌟 मुख्य विशेषताएं",
+                feat1Title: "क्रेडिट विश्लेषण", feat1Desc: "क्रेडिट उपयोग एवं भुगतान व्यवहार का विश्लेषण करें।",
+                feat2Title: "स्मार्ट सलाह", feat2Desc: "वित्तीय स्वास्थ्य सुधारने के लिए सिफारिशें प्राप्त करें।",
+                feat3Title: "क्रेडिट सिम्युलेटर", feat3Desc: "खर्च एवं नए ऋण के प्रभावों का अनुकरण करें।",
+                feat4Title: "भुगतान जागरूकता", feat4Desc: "आगामी भुगतानों और ईएमआई समय-सीमा से अवगत रहें।",
+                dashSummary: "क्रेडिट स्वास्थ्य सारांश", dashAlerts: "एक्शन सेंटर एवं अलर्ट", healthy: "उत्कृष्ट"
+            },
+            ta: { brand: "கிரெடிட் ஹெல்த்", langLabel: "மொழி", navDash: "டாஷ்போர்டு", navScore: "ஸ்கோர் விவரம்", navCards: "கிரெடிட் கார்டுகள்", navLoans: "கடன்கள் & EMI", navStrategy: "கடன் திட்டம்", navWallet: "வவாலெட்", navSpending: "செலவு", navSim: "சிமுலேட்டர்", navCalendar: "கேலண்டர்", navAI: "AI உதவியாளர்", navActions: "செயல் திட்டம்", navSafety: "ஆர்பிஐ பாதுகாப்பு", navProfile: "சுயவிவரம்", logout: "வெளியேறு", btnQuiz: "வினாடி வினா", dashCoreFeatures: "🌟 முக்கிய அம்சங்கள்", feat1Title: "கிரெடிட் விவரிப்பு", feat1Desc: "பயன்பாடு மற்றும் கடன் நடத்தை அறிக்கை.", feat2Title: "ஸ்மார்ட் சலசனை", feat2Desc: "ஸ்கோரை உயர்த்த சிறந்த ஆலோசனைகள்.", feat3Title: "சிமுலேட்டர்", feat3Desc: "புதிய செலவுகளின் தாக்கத்தை சோதிக்கவும்.", feat4Title: "செலுத்தல் விழிப்புணர்வு", feat4Desc: "கட்டண கெடு தேதிகளை அறிந்து கொள்ளுங்கள்.", dashSummary: "கிரெடிட் ஆரோக்கிய சுருக்கம்", dashAlerts: "செயல் மையம்", healthy: "மிகவும் நன்று" },
+            te: { brand: "క్రెడిట్ హెల్త్", langLabel: "భాష", navDash: "డాష్‌బోర్డ్", navScore: "స్కోర్ వివరాలు", navCards: "క్రెడిట్ కార్డ్‌లు", navLoans: "రుణాలు & EMI", navStrategy: "రుణ వ్యూహం", navWallet: "వాలెట్", navSpending: "ఖర్చులు", navSim: "సిమ్యులేటర్", navCalendar: "క్యాలెండర్", navAI: "AI కోపైలట్", navActions: "యాక్షన్ ప్లాన్", navSafety: "RBI రక్షణ", navProfile: "ప్రొఫైల్", logout: "లాగ్అవుట్", btnQuiz: "ఆరోగ్య క్విజ్", dashCoreFeatures: "🌟 ముఖ్య ఫీచర్లు", feat1Title: "క్రెడిట్ విశ్లేషణ", feat1Desc: "వినియోగం మరియు చెల్లింపుల సమాచారం.", feat2Title: "స్మార్ట్ సలహా", feat2Desc: "స్కోర్ పెంచడానికి సిఫార్సులు.", feat3Title: "సిమ్యులేటర్", feat3Desc: "ఖర్చుల ప్రభావాన్ని పరీక్షించండి.", feat4Title: "చెల్లింపుల హెచ్చరిక", feat4Desc: "రాబోయే గడువు తేదీలు తెలుసుకోండి.", dashSummary: "క్రెడిట్ ఆరోగ్య సారాంశం", dashAlerts: "యాక్షన్ సెంటర్", healthy: "అత్యుత్తమ" },
+            kn: { brand: "ಕ್ರೆಡಿಟ್ ಹೆಲ್ತ್", langLabel: "ಭಾಷೆ", navDash: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", navScore: "ಸ್ಕೋರ್ ವಿವರ", navCards: "ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು", navLoans: "ಸಾಲಗಳು & EMI", navStrategy: "ಸಾಲ ತಂತ್ರ", navWallet: "ವಾಲೆಟ್", navSpending: "ಖರ್ಚುಗಳು", navSim: "ಸಿಮ್ಯುಲೇಟರ್", navCalendar: "ಕ್ಯಾಲೆಂಡರ್", navAI: "AI ಕೋಪೈಲಟ್", navActions: "ಕಾರ್ಯ ಯೋಜನೆ", navSafety: "RBI ಭದ್ರತೆ", navProfile: "ಪ್ರೊಫೈಲ್", logout: "ಲಾಗೌಟ್", btnQuiz: "ಆರೋಗ್ಯ ಕ್ವಿಜ್", dashCoreFeatures: "🌟 ಪ್ರಮುಖ ವೈಶಿಷ್ಟ್ಯಗಳು", feat1Title: "ಕ್ರೆಡಿಟ್ ವಿಶ್ಲೇಷಣೆ", feat1Desc: "ಬಳಕೆ ಮತ್ತು ಪಾವತಿ ನಡವಳಿಕೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ.", feat2Title: "ಸ್ಮಾರ್ಟ್ ಸಲಹೆ", feat2Desc: "ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ.", feat3Title: "ಸಿಮ್ಯುಲೇಟರ್", feat3Desc: "ಖರ್ಚಿನ ಪರಿಣಾಮಗಳನ್ನು ಪರೀಕ್ಷಿಸಿ.", feat4Title: "ಪಾವತಿ ಜಾಗೃತಿ", feat4Desc: "ಮುಂಬರುವ ದಿನಾಂಕಗಳ ಜಾಗೃತಿ.", dashSummary: "ಕ್ರೆಡಿಟ್ ಆರೋಗ್ಯ ವಿವರ", dashAlerts: "ಆಕ್ಷನ್ ಸೆಂಟರ್", healthy: "ಉತ್ತಮ" },
+            ml: { brand: "ക്രെഡിറ്റ് ഹെൽത്ത്", langLabel: "ഭാഷ", navDash: "ഡാഷ്‌ബോർഡ്", navScore: "സ്കോർ വിവരങ്ങൾ", navCards: "കാർഡുകൾ", navLoans: "വായ്‌പകൾ", navStrategy: "തന്ത്രം", navWallet: "വാലറ്റ്", navSpending: "ചെലവുകൾ", navSim: "സിമുലേറ്റർ", navCalendar: "കലണ്ടർ", navAI: "AI സഹായി", navActions: "കർമ്മ പദ്ധതി", navSafety: "RBI സുരക്ഷ", navProfile: "പ്രൊഫൈൽ", logout: "ലോഗ്ഔട്ട്", btnQuiz: "ക്വിസ് ചെയ്യുക", dashCoreFeatures: "🌟 പ്രധാന സവിശേഷതകൾ", feat1Title: "വിശകലനം", feat1Desc: "ക്രെഡിറ്റ് ഉപയോഗം പരിശോധിക്കുക.", feat2Title: "സ്മാർട്ട് ഉപദേശം", feat2Desc: "മികച്ച നിർദ്ദേശങ്ങൾ ലഭിക്കുക.", feat3Title: "സിമുലേറ്റർ", feat3Desc: "സാമ്പത്തിക മാറ്റങ്ങൾ പരീക്ഷിക്കുക.", feat4Title: "അറിയിപ്പുകൾ", feat4Desc: "ബില്ലിംഗ് തീയതികൾ അറിയുക.", dashSummary: "ആരോഗ്യ ചുരുക്കം", dashAlerts: "അലേർട്ടുകൾ", healthy: "മികച്ചതാണ്" },
+            mr: { brand: "क्रेडिट हेल्थ", langLabel: "भाषा", navDash: "डॅशबोर्ड", navScore: "स्कोर तपशील", navCards: "क्रेडिट कार्ड्स", navLoans: "कर्ज आणि ईएमआय", navStrategy: "कर्ज धोरण", navWallet: "वॉलेट", navSpending: "खर्च", navSim: "सिम्युलेटर", navCalendar: "कॅलेंडर", navAI: "एआय सल्लागार", navActions: "कृती योजना", navSafety: "आरबीआय सुरक्षा", navProfile: "प्रोफाईल", logout: "लॉग आउट", btnQuiz: "चाचणी घ्या", dashCoreFeatures: "🌟 मुख्य वैशिष्ट्ये", feat1Title: "क्रेडिट विश्लेषण", feat1Desc: "वापर आणि भरणा पद्धतींचे विश्लेषण.", feat2Title: "स्मार्ट सल्ला", feat2Desc: "सुधारणांसाठी उत्तम सूचना.", feat3Title: "सिम्युलेटर", feat3Desc: "खर्चाचे परिणाम तपासा.", feat4Title: "देयक जागरूकता", feat4Desc: "देय तारखा लक्षात ठेवा.", dashSummary: "आरोग्य सारांश", dashAlerts: "ॲक्शन सेंटर", healthy: "उत्कृष्ट" },
+            gu: { brand: "ક્રેડિટ હેલ્થ", langLabel: "ભાષા", navDash: "ડેશબોર્ડ", navScore: "સ્કોર વિગત", navCards: "ક્રેડિટ કાર્ડ્સ", navLoans: "લોન & EMI", navStrategy: "દેવું વ્યૂહરચના", navWallet: "વોલેટ", navSpending: "ખર્ચ", navSim: "સિમ્યુલેટર", navCalendar: "કેલેન્ડર", navAI: "AI કોપાઇલોટ", navActions: "એક્શન પ્લાન", navSafety: "RBI સુરક્ષા", navProfile: "પ્રોફાઇલ", logout: "લોગ આઉટ", btnQuiz: "ક્વિઝ આપો", dashCoreFeatures: "🌟 મુખ્ય વિશેષતાઓ", feat1Title: "ક્રેડિટ વિશ્લેષણ", feat1Desc: "વપરાશ અને ચૂકવણીનું વિશ્લેષણ.", feat2Title: "સ્માર્ટ સલાહ", feat2Desc: "સુધારણા માટે ભલામણો.", feat3Title: "સિમ્યુલેટર", feat3Desc: "અસરોની ચકાસણી કરો.", feat4Title: "ચૂકવણી જાગૃતિ", feat4Desc: "તારીખો વિશે માહિતગાર રહો.", dashSummary: "આરોગ્ય સારાંશ", dashAlerts: "એક્શન સેન્ટર", healthy: "ઉત્તમ" },
+            bn: { brand: "ক্রেডিট হেলথ", langLabel: "ভাষা", navDash: "ড্যাশবোর্ড", navScore: "স্কোর বিবরণ", navCards: "ক্রেডিট কার্ড", navLoans: "ঋণ ও ইএমআই", navStrategy: "ঋণ কৌশল", navWallet: "ওয়ালেট", navSpending: "খরচ", navSim: "সিমুলেটর", navCalendar: "ক্যালেন্ডার", navAI: "AI উপদেষ্টা", navActions: "অ্যাকশন প্ল্যান", navSafety: "আরবিআই সুরক্ষা", navProfile: "প্রোফাইল", logout: "লগ আউট", btnQuiz: "কুইজ দিন", dashCoreFeatures: "🌟 প্রধান বৈশিষ্ট্যসমূহ", feat1Title: "ক্রেডিট বিশ্লেষণ", feat1Desc: "ব্যবহার এবং পেমেন্ট বিশ্লেষণ।", feat2Title: "স্মার্ট পরামর্শ", feat2Desc: "স্কোর বাড়ানোর জন্য পরামর্শ।", feat3Title: "সিমুলেটর", feat3Desc: "খরচের প্রভাব অনুকরণ করুন।", feat4Title: "সচেতনতা", feat4Desc: "পরিশোধের তারিখ জেনে রাখুন।", dashSummary: "স্বাস্থ্য সারসংক্ষেপ", dashAlerts: "অ্যাকশন সেন্টার", healthy: "চমৎকার" },
+            pa: { brand: "ਕ੍ਰੈਡਿਟ ਹੈਲਥ", langLabel: "ਭਾਸ਼ਾ", navDash: "ਡੈਸ਼ਬੋਰਡ", navScore: "ਸਕੋਰ ਵੇਰਵਾ", navCards: "ਕ੍ਰੈਡਿਟ ਕਾਰਡ", navLoans: "ਕਰਜ਼ੇ & EMI", navStrategy: "ਕਰਜ਼ਾ ਰਣਨੀਤੀ", navWallet: "ਵਾਲਿਟ", navSpending: "ਖਰਚਾ", navSim: "ਸਿਮੂਲੇਟਰ", navCalendar: "ਕੈਲੰਡਰ", navAI: "AI ਸਲਾਹਕਾਰ", navActions: "ਐਕਸ਼ਨ ਪਲਾਨ", navSafety: "RBI ਸੁਰੱਖਿਆ", navProfile: "ਪ੍ਰੋਫਾਈਲ", logout: "ਲੌਗ ਆਉਟ", btnQuiz: "ਕਵਿਜ਼ ਦਿਓ", dashCoreFeatures: "🌟 ਮੁੱਖ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ", feat1Title: "ਕ੍ਰੈਡਿਟ ਵਿਸ਼ਲੇਸ਼ਣ", feat1Desc: "ਵਰਤੋਂ ਅਤੇ ਭੁਗਤਾਨ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ।", feat2Title: "ਸਮਾਰਟ ਸਲਾਹ", feat2Desc: "ਸਕੋਰ ਸੁਧਾਰਨ ਲਈ ਸੁਝਾਅ।", feat3Title: "ਸਿਮੂਲੇਟਰ", feat3Desc: "ਨਵੇਂ ਖਰਚਿਆਂ ਦਾ ਅਸਰ ਵੇਖੋ।", feat4Title: "ਜਾਗਰੂਕਤਾ", feat4Desc: "ਬਿੱਲ ਤਾਰੀਖਾਂ ਬਾਰੇ ਜਾਣੋ।", dashSummary: "ਸਿਹਤ ਸਾਰ", dashAlerts: "ਐਕਸ਼ਨ ਸੈਂਟਰ", healthy: "ਬਹੁਤ ਵਧੀਆ" }
+        };
+
+        // -------------------------------------------------------------
+        // FORMATTERS & UTILITIES
+        // -------------------------------------------------------------
+        function formatINR(val) {
+            return '₹ ' + Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const html = `<div class="toast"><i class="fa-solid fa-circle-check text-emerald-400"></i> <span>${message}</span></div>`;
+            container.insertAdjacentHTML('beforeend', html);
+            setTimeout(() => {
+                if (container.firstChild) container.removeChild(container.firstChild);
+            }, 3000);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        // -------------------------------------------------------------
+        // AUTHENTICATION & INITIALIZATION
+        // -------------------------------------------------------------
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            currentUser.email = email;
+            currentUser.name = email.split('@')[0].replace('.', ' ');
+            
+            document.getElementById('topUserName').innerText = currentUser.name;
+            document.getElementById('topUserEmail').innerText = currentUser.email;
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profileEmail').innerText = currentUser.email;
+            document.getElementById('credGmail').innerText = currentUser.email;
+
+            const authScreen = document.getElementById('authScreen');
+            authScreen.style.opacity = '0';
+            setTimeout(() => {
+                authScreen.style.display = 'none';
+                showToast("Welcome to Credit Health Pro 3.0!");
+            }, 400);
+        }
+
+        function logout() {
+            const authScreen = document.getElementById('authScreen');
+            authScreen.style.display = 'flex';
+            setTimeout(() => { authScreen.style.opacity = '1'; }, 10);
+            switchTab('dashboard');
+        }
+
+        function changeLanguage(langCode) {
+            const dict = i18n[langCode] || i18n.en;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerHTML = dict[key];
+            });
+            showToast("Language updated successfully");
+        }
+
+        // -------------------------------------------------------------
+        // NAVIGATION LOGIC
+        // -------------------------------------------------------------
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const pageTitle = document.getElementById('pageTitle');
+
+        function switchTab(targetId) {
+            navBtns.forEach(btn => {
+                if (btn.dataset.target === targetId) {
+                    btn.classList.add('bg-primary', 'text-white');
+                    pageTitle.innerText = btn.querySelector('span').innerText;
+                } else {
+                    btn.classList.remove('bg-primary', 'text-white');
+                }
+            });
+
+            tabContents.forEach(content => {
+                if (content.id === targetId) content.classList.add('active');
+                else content.classList.remove('active');
+            });
+        }
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.target));
+        });
+
+        // -------------------------------------------------------------
+        // DYNAMIC DATA RENDERING & COMPUTATION
+        // -------------------------------------------------------------
+        function renderAll() {
+            // Totals computation
+            const totalLimit = cards.reduce((sum, c) => sum + Number(c.limit), 0);
+            const totalOutstanding = cards.reduce((sum, c) => sum + Number(c.outstanding), 0);
+            const overallUtil = totalLimit > 0 ? ((totalOutstanding / totalLimit) * 100).toFixed(1) : 0;
+
+            const totalEmi = loans.reduce((sum, l) => sum + Number(l.emi), 0);
+            const emiRatio = monthlyIncome > 0 ? ((totalEmi / monthlyIncome) * 100).toFixed(1) : 0;
+
+            const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+            const netSurplus = monthlyIncome - (totalEmi + totalExpenses);
+
+            // Badges & Counters
+            document.getElementById('cardsCountBadge').innerText = cards.length;
+            document.getElementById('loansCountBadge').innerText = loans.length;
+
+            // Dashboard Hero Data
+            document.getElementById('dashUtilVal').innerText = `${overallUtil}%`;
+            document.getElementById('dashEmiVal').innerText = formatINR(totalEmi).split('.')[0];
+            document.getElementById('dashCardsVal').innerText = `${cards.length} Cards`;
+            document.getElementById('dashSurplusVal').innerText = formatINR(netSurplus).split('.')[0];
+
+            // Render Cards Grid & Credentials List
+            renderCardsGrid();
+            renderLoansGrid();
+            renderExpensesList();
+            renderTransactionsList();
+            renderActionsList();
+            renderCalendarEvents();
+            renderProfileCredentials();
+            updateScoreBreakdownPanel('payment');
+        }
+
+        function renderCardsGrid() {
+            const container = document.getElementById('cardsGridContainer');
+            container.innerHTML = cards.map(c => {
+                const util = ((c.outstanding / c.limit) * 100).toFixed(0);
+                return `
+                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden cursor-pointer" onclick="openBranchDetail('card', '${c.id}')">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <p class="text-[10px] font-bold uppercase text-slate-400">${c.bank}</p>
+                                <h4 class="font-bold text-sm text-white mt-0.5">${c.name}</h4>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">${c.cardType}</span>
+                        </div>
+                        <div class="space-y-2 mt-4">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Outstanding:</span>
+                                <span class="font-bold text-white">${formatINR(c.outstanding)}</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Total Limit:</span>
+                                <span class="font-semibold text-slate-300">${formatINR(c.limit)}</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5 mt-2">
+                                <div class="${util > 40 ? 'bg-amber-500' : 'bg-emerald-500'} h-1.5 rounded-full" style="width: ${util}%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-400 pt-1">
+                                <span>Utilisation: ${util}%</span>
+                                <span>Due: Day ${c.dueDate}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLoansGrid() {
+            const container = document.getElementById('loansGridContainer');
+            container.innerHTML = loans.map(l => {
+                return `
+                    <div class="glass-card p-5 rounded-2xl cursor-pointer" onclick="openBranchDetail('loan', '${l.id}')">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded uppercase">${l.type}</span>
+                                <h4 class="font-bold text-base text-white mt-2">${l.lender}</h4>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">${l.interestRate}% Interest</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800 my-3 text-xs">
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase">Outstanding</span>
+                                <p class="font-bold text-white mt-0.5">${formatINR(l.outstanding)}</p>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 uppercase">Monthly EMI</span>
+                                <p class="font-bold text-amber-400 mt-0.5">${formatINR(l.emi)}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Remaining Tenure: ${l.remainingMonths} Months</span>
+                            <span>EMI Due: Day ${l.emiDueDate}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderExpensesList() {
+            const container = document.getElementById('expensesListContainer');
+            container.innerHTML = expenses.map(e => `
+                <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-800/60" onclick="openBranchDetail('expense', '${e.id}')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <div>
+                            <p class="font-bold text-xs text-white">${e.merchant}</p>
+                            <p class="text-[10px] text-slate-400">${e.category} • ${e.date}</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-xs text-white">${formatINR(e.amount)}</span>
+                </div>
+            `).join('');
+
+            // Categories summary
+            const catMap = {};
+            expenses.forEach(e => catMap[e.category] = (catMap[e.category] || 0) + e.amount);
+            document.getElementById('expenseCategoriesSummary').innerHTML = Object.keys(catMap).map(cat => `
+                <div class="flex justify-between items-center text-xs p-2 bg-slate-900 rounded-lg">
+                    <span class="text-slate-300 font-medium">${cat}</span>
+                    <span class="font-bold text-indigo-400">${formatINR(catMap[cat])}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderTransactionsList() {
+            const container = document.getElementById('txList');
+            container.innerHTML = transactions.map(t => `
+                <div class="p-4 flex items-center justify-between hover:bg-slate-800/40 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl ${t.type === 'credit' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center font-bold">
+                            <i class="fa-solid ${t.type === 'credit' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-white">${t.title}</p>
+                            <p class="text-[10px] text-slate-400">${t.date}</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-xs ${t.type === 'credit' ? 'text-emerald-400' : 'text-slate-200'}">${t.type === 'credit' ? '+' : '-'} ${formatINR(t.amount)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('mainWalletBal').innerText = formatINR(walletBalance);
+            document.getElementById('dashWalletBalDisplay').innerText = formatINR(walletBalance);
+        }
+
+        function renderActionsList() {
+            const container = document.getElementById('actionsListContainer');
+            const dashAlerts = document.getElementById('dashAlertsContainer');
+
+            let completedCount = 0;
+            container.innerHTML = actions.map(a => {
+                if (a.completed) completedCount++;
+                return `
+                    <div class="p-4 rounded-xl ${a.completed ? 'bg-slate-900/40 opacity-60' : 'bg-slate-900'} border border-slate-800 flex items-center justify-between gap-4">
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" ${a.completed ? 'checked' : ''} onchange="toggleAction('${a.id}')" class="mt-1 w-4 h-4 accent-primary rounded cursor-pointer">
+                            <div>
+                                <p class="text-xs font-semibold ${a.completed ? 'line-through text-slate-500' : 'text-white'}">${a.text}</p>
+                                <div class="flex gap-2 mt-1">
+                                    <span class="text-[10px] px-2 py-0.5 bg-indigo-500/10 text-indigo-400 font-bold rounded">${a.impact} Impact</span>
+                                    <span class="text-[10px] px-2 py-0.5 bg-amber-500/10 text-amber-400 font-bold rounded">${a.priority} Priority</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openBranchDetail('action', '${a.id}')" class="text-xs text-indigo-400 hover:underline">Branch View</button>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('actionsCompletedCount').innerText = `${completedCount} / ${actions.length} Completed`;
+
+            // Dashboard active alerts
+            dashAlerts.innerHTML = actions.filter(a => !a.completed).map(a => `
+                <div class="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 cursor-pointer" onclick="openBranchDetail('action', '${a.id}')">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                        <span>${a.text}</span>
+                    </div>
+                    <span class="font-bold text-amber-400">${a.impact}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderCalendarEvents() {
+            const container = document.getElementById('calendarEventsContainer');
+            const events = [];
+
+            cards.forEach(c => events.push({ title: `${c.bank} ${c.name} Statement Due`, date: `Day ${c.dueDate}`, amount: formatINR(c.outstanding * 0.05), type: 'card' }));
+            loans.forEach(l => events.push({ title: `${l.lender} ${l.type} EMI`, date: `Day ${l.emiDueDate}`, amount: formatINR(l.emi), type: 'loan' }));
+
+            container.innerHTML = events.map(e => `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg ${e.type === 'card' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-amber-500/20 text-amber-400'} flex items-center justify-center font-bold">
+                            <i class="fa-solid ${e.type === 'card' ? 'fa-credit-card' : 'fa-landmark'}"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white">${e.title}</p>
+                            <p class="text-[10px] text-slate-400">Scheduled: ${e.date} of month</p>
+                        </div>
+                    </div>
+                    <span class="font-bold text-slate-200">${e.amount}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderProfileCredentials() {
+            // Bank Accounts in User Profile
+            const bankContainer = document.getElementById('profileBankList');
+            bankContainer.innerHTML = bankAccounts.map(b => `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2 cursor-pointer hover:border-indigo-500/40" onclick="openBranchDetail('bank', '${b.id}')">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-xs text-white">${b.bankName}</span>
+                        <span class="text-[10px] font-bold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">${b.type}</span>
+                    </div>
+                    <p class="text-xs font-mono text-slate-300">Acc No: ${b.accountNo}</p>
+                    <div class="flex justify-between text-[10px] text-slate-400 border-t border-slate-800 pt-2">
+                        <span>IFSC: ${b.ifsc}</span>
+                        <span class="font-bold text-white">${b.balance}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Credit Cards in User Profile
+            const cardContainer = document.getElementById('profileCardList');
+            cardContainer.innerHTML = cards.map(c => `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2 cursor-pointer hover:border-indigo-500/40" onclick="openBranchDetail('card', '${c.id}')">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-xs text-white">${c.bank} (${c.name})</span>
+                        <span class="text-[10px] font-mono text-indigo-400 font-bold">${c.cardType}</span>
+                    </div>
+                    <p class="text-xs font-mono text-slate-300">Card No: ${c.cardNo || '•••• 4821'}</p>
+                    <div class="flex justify-between text-[10px] text-slate-400 border-t border-slate-800 pt-2">
+                        <span>Expiry: ${c.expiry || '08/28'}</span>
+                        <span class="font-bold text-emerald-400">Limit: ${formatINR(c.limit).split('.')[0]}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // -------------------------------------------------------------
+        // DEEP INTERACTIVE BRANCHING MODAL LOGIC
+        // -------------------------------------------------------------
+        function openBranchDetail(entityType, id) {
+            const modalTitle = document.getElementById('branchModalTitle');
+            const modalBody = document.getElementById('branchModalBody');
+
+            if (entityType === 'card') {
+                const card = cards.find(c => c.id === id);
+                if (!card) return;
+                modalTitle.innerText = `Branch Detail: ${card.bank} ${card.name}`;
+                modalBody.innerHTML = `
+                    <div class="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between"><span>Bank:</span><strong class="text-white">${card.bank}</strong></div>
+                        <div class="flex justify-between"><span>Card Number:</span><strong class="font-mono text-indigo-300">${card.cardNo || '•••• 4821'}</strong></div>
+                        <div class="flex justify-between"><span>Credit Limit:</span><strong class="text-white">${formatINR(card.limit)}</strong></div>
+                        <div class="flex justify-between"><span>Current Outstanding:</span><strong class="text-rose-400">${formatINR(card.outstanding)}</strong></div>
+                        <div class="flex justify-between"><span>Billing Statement Date:</span><strong class="text-white">${card.statementDate}th of month</strong></div>
+                        <div class="flex justify-between"><span>Payment Due Date:</span><strong class="text-amber-400">${card.dueDate}th of month</strong></div>
+                    </div>
+                    <div class="pt-2 flex gap-2">
+                        <button onclick="showToast('Initiating payment for ${card.name}...'); closeModal('branchDetailModal');" class="flex-1 bg-primary text-white py-2 rounded-xl font-bold">Pay Statement Bill</button>
+                    </div>
+                `;
+            } else if (entityType === 'loan') {
+                const loan = loans.find(l => l.id === id);
+                if (!loan) return;
+                modalTitle.innerText = `Branch Detail: ${loan.lender} ${loan.type}`;
+                modalBody.innerHTML = `
+                    <div class="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between"><span>Lender Institution:</span><strong class="text-white">${loan.lender}</strong></div>
+                        <div class="flex justify-between"><span>Loan Outstanding:</span><strong class="text-rose-400">${formatINR(loan.outstanding)}</strong></div>
+                        <div class="flex justify-between"><span>Interest Rate:</span><strong class="text-emerald-400">${loan.interestRate}% P.A.</strong></div>
+                        <div class="flex justify-between"><span>Monthly EMI:</span><strong class="text-amber-400">${formatINR(loan.emi)}</strong></div>
+                        <div class="flex justify-between"><span>Remaining Tenure:</span><strong class="text-white">${loan.remainingMonths} Months</strong></div>
+                    </div>
+                    <div class="pt-2 flex gap-2">
+                        <button onclick="showToast('Routing extra payment to shorten tenure...'); closeModal('branchDetailModal');" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl font-bold">Make Extra Prepayment</button>
+                    </div>
+                `;
+            } else if (entityType === 'bank') {
+                const b = bankAccounts.find(x => x.id === id);
+                if (!b) return;
+                modalTitle.innerText = `Bank Credentials Detail: ${b.bankName}`;
+                modalBody.innerHTML = `
+                    <div class="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
+                        <div class="flex justify-between"><span>Bank Name:</span><strong class="text-white">${b.bankName}</strong></div>
+                        <div class="flex justify-between"><span>Account Number:</span><strong class="text-indigo-300">${b.accountNo}</strong></div>
+                        <div class="flex justify-between"><span>IFSC Code:</span><strong class="text-white">${b.ifsc}</strong></div>
+                        <div class="flex justify-between"><span>Account Type:</span><strong class="text-emerald-400">${b.type}</strong></div>
+                    </div>
+                `;
+            } else if (entityType === 'action') {
+                const act = actions.find(a => a.id === id);
+                if (!act) return;
+                modalTitle.innerText = `Action Optimization Detail`;
+                modalBody.innerHTML = `
+                    <div class="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <p class="font-bold text-white">${act.text}</p>
+                        <div class="flex justify-between text-xs"><span>CIBIL Impact Score:</span><strong class="text-emerald-400">${act.impact}</strong></div>
+                        <div class="flex justify-between text-xs"><span>Priority Status:</span><strong class="text-amber-400">${act.priority}</strong></div>
+                    </div>
+                    <button onclick="toggleAction('${act.id}'); closeModal('branchDetailModal');" class="w-full bg-primary text-white py-2 rounded-xl font-bold">Toggle Completion Status</button>
+                `;
+            }
+            openModal('branchDetailModal');
+        }
+
+        // -------------------------------------------------------------
+        // SCORE BREAKDOWN DETAIL FACTORS
+        // -------------------------------------------------------------
+        const scoreData = {
+            payment: {
+                title: "Payment History (35%)", icon: "fa-calendar-check", color: "emerald",
+                desc: "Reflects whether you have paid past credit card balances and loan EMIs on time without default.",
+                tips: [
+                    "Set up Auto-Pay mandates from your bank account to automate minimum payments.",
+                    "Use Payment Awareness alerts to receive reminders 3 days before statement due dates."
+                ]
+            },
+            utilization: {
+                title: "Credit Utilisation (30%)", icon: "fa-chart-pie", color: "indigo",
+                desc: "Ratio of current total outstanding balance to available total credit limit across all active cards.",
+                tips: [
+                    "Maintain total credit utilization under 30% to maximize CIBIL health score.",
+                    "Make mid-cycle payments before statement generation to lower reported balances."
+                ]
+            },
+            history: {
+                title: "Length of History (15%)", icon: "fa-hourglass-half", color: "amber",
+                desc: "Average age of your open credit accounts and age of your oldest active card.",
+                tips: [
+                    "Keep older credit cards active even if unused to preserve account history depth.",
+                    "Avoid closing your oldest credit account."
+                ]
+            },
+            new: {
+                title: "New Credit & Hard Inquiries (10%)", icon: "fa-plus-circle", color: "emerald",
+                desc: "Frequency of new credit applications causing hard inquiries on your bureau file.",
+                tips: [
+                    "Space out loan or credit card applications by at least 6 months.",
+                    "Avoid submitting multiple simultaneous applications."
+                ]
+            },
+            mix: {
+                title: "Credit Mix (10%)", icon: "fa-layer-group", color: "emerald",
+                desc: "Balanced variety of secured loans (home/car) and unsecured credit (cards/personal loans).",
+                tips: [
+                    "A healthy balance of revolving credit and installment loans builds a stronger credit profile."
+                ]
+            }
+        };
+
+        function showScoreDetail(key, element) {
+            document.querySelectorAll('.breakdown-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            updateScoreBreakdownPanel(key);
+        }
+
+        function updateScoreBreakdownPanel(key) {
+            const data = scoreData[key];
+            document.getElementById('detailTitle').innerText = data.title;
+            document.getElementById('detailDesc').innerText = data.desc;
+            document.getElementById('detailTips').innerHTML = data.tips.map(t => `
+                <li class="flex items-start gap-3 p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300">
+                    <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+                    <span>${t}</span>
+                </li>
+            `).join('');
+        }
+
+        // -------------------------------------------------------------
+        // SIMULATOR REAL-TIME CALCULATION
+        // -------------------------------------------------------------
+        function updateSimulator() {
+            const extraSpend = parseInt(document.getElementById('simSpend').value);
+            const payoff = parseInt(document.getElementById('simPay').value);
+            const newLoan = parseInt(document.getElementById('simLoan').value);
+            const missedEmi = document.getElementById('simMissed').checked;
+
+            document.getElementById('spendValDisplay').innerText = formatINR(extraSpend).split('.')[0];
+            document.getElementById('payValDisplay').innerText = formatINR(payoff).split('.')[0];
+            document.getElementById('loanValDisplay').innerText = formatINR(newLoan).split('.')[0];
+
+            let score = baseScore;
+            if (extraSpend > 0) score -= Math.floor(extraSpend / 4000);
+            if (payoff > 0) score += Math.floor(payoff / 3000);
+            if (newLoan > 0) score -= Math.floor(newLoan / 25000);
+            if (missedEmi) score -= 45;
+
+            score = Math.max(300, Math.min(900, score));
+            document.getElementById('simScoreDisplay').innerText = score;
+            document.getElementById('simCibilDisplay').innerText = `Est CIBIL: ${score}`;
+
+            const feedback = document.getElementById('simFeedback');
+            if (missedEmi) {
+                feedback.innerHTML = `<span class="text-rose-400 font-bold">Severe Impact!</span> A missed EMI payment drops your score dramatically.`;
+            } else if (score > baseScore) {
+                feedback.innerHTML = `<span class="text-emerald-400 font-bold">Smart Decision!</span> Paying down debt improves utilization and boosts your score.`;
+            } else {
+                feedback.innerHTML = `Adjust parameters to see how actions affect creditworthiness.`;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // AI COPILOT & MODAL ACTIONS
+        // -------------------------------------------------------------
+        function sendAI() {
+            const input = document.getElementById('aiInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.insertAdjacentHTML('beforeend', `
+                <div class="flex gap-3 max-w-[85%] self-end ml-auto flex-row-reverse">
+                    <div class="w-8 h-8 rounded-xl bg-slate-800 text-white flex items-center justify-center shrink-0 text-xs font-bold"><i class="fa-solid fa-user"></i></div>
+                    <div class="bg-primary text-white p-3.5 rounded-2xl rounded-tr-none text-xs leading-relaxed">${text}</div>
+                </div>
+            `);
+            input.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            setTimeout(() => {
+                let reply = "Maintaining low utilization (under 30%) and a 100% on-time payment track record are key to an 800+ score. Consider applying the Debt Avalanche strategy shown in the Debt Strategy tab.";
+                if (text.toLowerCase().includes('30s') || text.toLowerCase().includes('explain')) {
+                    reply = `Summary in 30s: Your monthly income is ${formatINR(monthlyIncome)}, with an EMI burden of ${formatINR(30300)} (22% DTI). Your credit utilization is healthy at 24.7%. Keep up on-time payments to push your CIBIL to 800+!`;
+                }
+                chatWindow.insertAdjacentHTML('beforeend', `
+                    <div class="flex gap-3 max-w-[85%]">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl rounded-tl-none text-xs text-slate-200 leading-relaxed">${reply}</div>
+                    </div>
+                `);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 600);
+        }
+
+        function quickExplain30() {
+            switchTab('copilot');
+            document.getElementById('aiInput').value = "Explain My Money in 30s";
+            sendAI();
+        }
+
+        function toggleAction(id) {
+            const act = actions.find(a => a.id === id);
+            if (act) {
+                act.completed = !act.completed;
+                renderActionsList();
+                showToast("Action status updated!");
+            }
+        }
+
+        function addFundsPrompt() {
+            walletBalance += 5000;
+            transactions.unshift({ id: 'tx-' + Date.now(), title: 'Added Funds', date: 'Just now', amount: 5000, type: 'credit' });
+            renderTransactionsList();
+            showToast("Added ₹ 5,000.00 to Personal Wallet!");
+        }
+
+        function openSendMoneyModal() {
+            const amt = prompt("Enter amount to send (₹):", "1000");
+            if (amt && !isNaN(amt)) {
+                walletBalance -= Number(amt);
+                transactions.unshift({ id: 'tx-' + Date.now(), title: 'Sent Money', date: 'Just now', amount: Number(amt), type: 'debit' });
+                renderTransactionsList();
+                showToast(`Sent ${formatINR(amt)} from wallet!`);
+            }
+        }
+
+        function promptEditIncome() {
+            const newInc = prompt("Enter Monthly Income (₹):", monthlyIncome);
+            if (newInc && !isNaN(newInc)) {
+                monthlyIncome = Number(newInc);
+                document.getElementById('headerIncomeDisplay').innerText = formatINR(monthlyIncome).split('.')[0];
+                renderAll();
+                showToast("Monthly Income updated!");
+            }
+        }
+
+        // Modal Handlers
+        function openAddCardModal() { openModal('addCardModal'); }
+        function openAddLoanModal() { openModal('addLoanModal'); }
+        function openAddBankModal() { openModal('addBankModal'); }
+        function openAddExpenseModal() { openModal('addExpenseModal'); }
+        function openQuizModal() { openModal('quizModal'); }
+
+        function handleAddCardSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            cards.push({
+                id: 'card-' + Date.now(),
+                bank: fd.get('bank'),
+                name: fd.get('name'),
+                limit: Number(fd.get('limit')),
+                outstanding: Number(fd.get('outstanding')),
+                statementDate: Number(fd.get('statementDate')),
+                dueDate: Number(fd.get('dueDate')),
+                cardType: 'Visa Platinum',
+                cardNo: '•••• ' + Math.floor(1000 + Math.random() * 9000),
+                expiry: '12/28'
+            });
+            closeModal('addCardModal');
+            renderAll();
+            showToast("New Credit Card added!");
+        }
+
+        function handleAddLoanSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            loans.push({
+                id: 'loan-' + Date.now(),
+                lender: fd.get('lender'),
+                type: fd.get('type'),
+                outstanding: Number(fd.get('outstanding')),
+                emi: Number(fd.get('emi')),
+                interestRate: Number(fd.get('interestRate')),
+                emiDueDate: Number(fd.get('emiDueDate')),
+                remainingMonths: 36
+            });
+            closeModal('addLoanModal');
+            renderAll();
+            showToast("New Active Loan added!");
+        }
+
+        function handleAddBankSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            bankAccounts.push({
+                id: 'bank-' + Date.now(),
+                bankName: fd.get('bankName'),
+                accountNo: fd.get('accountNo'),
+                ifsc: fd.get('ifsc'),
+                type: fd.get('type'),
+                balance: '₹ 50,000.00'
+            });
+            closeModal('addBankModal');
+            renderAll();
+            showToast("Bank Account Credentials saved!");
+        }
+
+        function handleAddExpenseSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            expenses.unshift({
+                id: 'exp-' + Date.now(),
+                merchant: fd.get('merchant'),
+                amount: Number(fd.get('amount')),
+                category: fd.get('category'),
+                date: new Date().toISOString().split('T')[0]
+            });
+            closeModal('addExpenseModal');
+            renderAll();
+            showToast("Expense recorded!");
+        }
+
+        function submitQuiz() {
+            closeModal('quizModal');
+            showToast("Quiz submitted! Financial Health Literacy Score: 100%");
+        }
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>
