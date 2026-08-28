@@ -1,0 +1,1 @@
+Prototype package prepared from the user-provided HTML file. Add your preferred open-source or proprietary license before public distribution.
